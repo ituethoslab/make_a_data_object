@@ -54,7 +54,7 @@ class DataObject():
                                                          self.precipitation) # * self.scale
         
     def __repr__(self):
-        return f"{self.__class__} with a {self.surface.shape} surface"
+        return "{} with a {} surface".format(self.__class__, self.surface.shape)
 
     def __str__(self):
         # there is also np.array2string
