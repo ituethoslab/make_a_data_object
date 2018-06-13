@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <title>Make a data object</title>
+  </head>
+
+  <body>
+    <header class="bg-dark fixed-top text-white">
+      <p><span class="bg-white text-dark">TiP</span>Top things here</p>
+    </header>
+
+    <main class="container">
+      <section id="intro">
+	  <p>Intro</p>
+      </section>
+      <section id="generator">
+	<h1>Intro</h1>
+	<p>This thing makes data objects</p>
+	<h1>Input</h1>
+	<form action="/make" method="post">
+	  <div class="form-group">
+	    <label for="abstract">Abstract</label>
+	    <textarea id="abstract" class="form-control" name="abstract" rows="10"></textarea>
+	    <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="precipitation">Precipitation</label>
+	    <input id="precipitation" name="precipitation">
+	    <small id="precipitationHelp" class="form-text text-muted">A comma separated list of numbers</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="limit">Limit</label>
+	    <input id="limit" name="limit">
+	    <small id="limitHelp" class="form-text form-muted">Limit the object</small>
+	  </div>
+	  <button class="btn btn-primary">Submit</button>
+	</form>
+	<h2>Generator</h2>
+	<p>{{do.surface}}</p>
+	<h1>Download</h1>
+	<p>Get <code>.stl</code> file here.</p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="col bg-light text-muted">
+	<p>Nice</p>
+      </div>
+    </footer>
+    </div>
+  </body>
+</html>
