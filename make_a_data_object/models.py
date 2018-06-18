@@ -9,51 +9,80 @@ class Data():
     p = [3.2, 0, 0, 0, 4.0, 0.2, 3.1]
 
 
+class Weather():
+    """Weather class.
+
+    For now, to be used statistically as a weather factory. Rain is
+    not rare in Copenhagen, but it is does not rain particularly much
+    at a time, something like <15 mm unless it's a major rain. With
+    the weather archice at http://www.dmi.dk/vejr/arkiver/vejrarkiv/,
+    let's model it as a random chi-squared distribution.
+
+    """
+    precipitation = None
+
+    def __init__(self, precipitation):
+        if precipitation:
+            self.precipitation = precipitation
+        else:
+            self.precipitation = self.random_weather()
+
+    def random_weather(self, size=7):
+        return np.floor(np.random.chisquare(1, size) * np.random.randint(0, 10))
+
+
 class DataObject():
     """A data object thing."""
     size = None
     X = Y = Z = None
-    scale = 1
     grid = (None, None)
     surface = None
     abstract = None
     precipitation = None
-    
-    def __init__(self, abstract, precipitation, size=100, limit=None):
-        """The constructor"""
+
+    def __init__(self, abstract, precipitation, size=100, limit=32):
+        """The constructor.
+
+        Parameters
+        ----------
+        size : int
+            Size of the object, with equal in two dimensions
+        limit : int
+            Limit the resolution of the object, the rest of the points
+            are interpolated
+        """
         # X, Y, Z are size in three dimensions
         self.size = size
         self.X = self.Y = size
-        
+
         # grid of coordinates
         self.grid = np.mgrid[0:self.X, 0:self.Y]
-        
+
         # the actually interesting data
         ## numpy.interpolate takes list of new indices, list of old indices,
         ## and list of old values, to calculate new values
         ## Also do scaling for z. 2D inteprolation from scipy would be good
-        self.scale = size/min(len(abstract), len(precipitation))
-        
+
         abstract_v = self.vectorize_abstract(abstract, limit=limit)
-        
+
         self.ai = interp1d(np.arange(len(abstract_v)),
-                                             abstract_v, kind='cubic')
+                           abstract_v, kind='cubic')
         self.abstract = np.interp(np.linspace(0, len(abstract_v), size),
                                   np.arange(len(abstract_v)),
                                   self.ai(abstract_v))
-        
+
         self.pi = interp1d(np.arange(len(precipitation)),
-                                             precipitation, kind='cubic')
+                           precipitation, kind='cubic')
         self.precipitation = np.interp(np.linspace(0, len(precipitation), size),
                                        np.arange(len(precipitation)),
                                        self.pi(precipitation))
-        
+
         logging.debug(self.grid)
-        
+
         # the surface
-        self.surface = (size/2) + self.outerprod_surface(self.grid,
+        self.surface = (size/2) + self.calculate_surface(self.grid,
                                                          self.abstract,
-                                                         self.precipitation) # * self.scale
+                                                         self.precipitation)
         
     def __repr__(self):
         return "{} with a {} surface".format(self.__class__, self.surface.shape)
@@ -61,25 +90,28 @@ class DataObject():
     def __str__(self):
         # there is also np.array2string
         return "\n".join(" ".join(str(int(y)) for y in row) for row in self.surface)
-    
+
     def vectorize_abstract(self, abstract, limit=None):
         lens = list(map(len, abstract.split()[:limit]))
         # av = np.array([10 + (lens[i - 1] - l) for (i, l) in enumerate(lens)])
         av = np.array([np.abs(lens[i - 1] - l) for (i, l) in enumerate(lens)])
         return av
-    
+
     def outerprod_surface(self, grid, xd, yd):
         """Yet another function. Outputs size * size shaped np.ndarray."""
         # return np.outer(yd, xd) / (np.outer(xd, yd) + 0.00001)
         # return np.outer((yd + 0.1), xd) / np.outer(xd, (yd + 0.1))
         return np.outer(xd, yd)
-    
+
     def add_surface(self, grid, xd, yd):
         return np.add(xd, yd)
 
+    def calculate_surface(self, grid, xd, yd):
+        return xd + np.outer(xd, yd)
+
     def heatmap(self, **kwargs):
         return sns.heatmap(self.surface, square=True, **kwargs)
-    
+
     def contourf(self, **kwargs):
         return plt.contourf(self.surface, **kwargs)
 
