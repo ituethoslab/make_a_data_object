@@ -8,8 +8,15 @@
   </head>
 
   <body>
-    <header class="bg-dark fixed-top text-white">
-      <p><span class="bg-white text-dark">TiP</span>Top things here</p>
+    <header class="container">
+      <div class="row bg-dark fixed-top text-white">
+	<div class="col-2">
+	  <span class="bg-white text-dark p-2 m-1">TiP</span>
+	</div>
+	<div class="col-10 p-1">
+	  <h5>Make a data object</h5>
+	</div>
+      </div>
     </header>
 
     <main class="container">
@@ -26,26 +33,24 @@
 	    <textarea id="abstract" class="form-control" name="abstract" rows="10" required></textarea>
 	    <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
 	  </div>
-	  <div class="form-group">
-	    <label for="precipitation">Precipitation in mm</label>
-	    <input id="precipitation" name="precipitation" required pattern="\s*(\d+)(,\s*\d+)*">
-	    <small id="precipitationHelp" class="form-text text-muted">A comma separated list of numbers</small>
+	  <div class="row form-group">
+	    <label class="col-2" for="precipitation">Precipitation</label>
+	    <input class="col-3" id="precipitation" name="precipitation" required pattern="\s*(\d+)(,\s*\d+)*">
+	    <small class="col text-muted" id="precipitationHelp" class="form-text text-muted">A comma separated list of values in mm</small>
 	  </div>
-	  <div class="form-group">
-	    <label for="limit">Limit</label>
-	    <input id="limit" name="limit" pattern="(\d)+">
-	    <small id="limitHelp" class="form-text form-muted">Limit the of data that is used. Smaller values produce less hedgehoggy objects. Something like 10-30 seem nice values.</small>
+	  <div class="row form-group">
+	    <label class="col-2" for="limit">Limit</label>
+	    <input class="col-3" id="limit" name="limit" pattern="(\d)+">
+	    <small class="col text-muted" id="limitHelp" class="form-text form-muted">Limit the of data that is used, &lt; 100. Smaller values produce less hedgehoggy objects. Something like 10-30 seems good</small>
 	  </div>
-	  <div class="form-group">
-	    <button class="btn btn-primary" name="submit">Submit</button>
-	    <label for="submit">Get <code>.dat</code> file here.</label>
-	  </div>
+	  <button class="btn btn-primary">Download <code>.dat</code></button>
 	</form>
       </section>
     </main>
 
     <footer class="footer">
-      <div class="col bg-light text-muted">
+      <div class="col bg-light text-muted pt-5 pl-5 pr-5 pb-3 mt-5">
+	Lovingly crafted in Copenhagen &#x1F6B2;
       </div>
     </footer>
     </div>
