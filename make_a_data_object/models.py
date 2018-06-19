@@ -3,7 +3,8 @@ import numpy as np
 import scipy
 from scipy.interpolate import interp1d
 
-logging.basicConfig(filename='debug.log', level=logging.DEBUG)
+# This needs to be conditioned
+# logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 logger = logging.getLogger()
 
 class Data():
