@@ -11,13 +11,17 @@ def hello_world():
 def index():
     """Index route."""
     do = DataObject(Data.a, Data.p)
-    return render_template('index.html', do=do)
+    return render_template('index.html')
 
 @app.route('/make', methods=['POST'])
 def submit():
     a = request.form['abstract']
     p = request.form['precipitation'].split(',')
-    l = int(request.form.get('limit', 5))
-    do = DataObject(a, p, limit=l, size=100)
+    try:
+        l = int(request.form.get('limit'))
+    except ValueError:
+        l = None
+    # do = DataObject(a, p, limit=l)
+    do = DataObject(a, p, limit=35)
     return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename=make.dat"})
 

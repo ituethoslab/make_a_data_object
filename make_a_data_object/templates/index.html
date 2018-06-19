@@ -23,31 +23,29 @@
 	<form action="make" method="post">
 	  <div class="form-group">
 	    <label for="abstract">Abstract</label>
-	    <textarea id="abstract" class="form-control" name="abstract" rows="10"></textarea>
+	    <textarea id="abstract" class="form-control" name="abstract" rows="10" required></textarea>
 	    <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
 	  </div>
 	  <div class="form-group">
 	    <label for="precipitation">Precipitation in mm</label>
-	    <input id="precipitation" name="precipitation">
+	    <input id="precipitation" name="precipitation" required pattern="\s*(\d+)(,\s*\d+)*">
 	    <small id="precipitationHelp" class="form-text text-muted">A comma separated list of numbers</small>
 	  </div>
 	  <div class="form-group">
 	    <label for="limit">Limit</label>
-	    <input id="limit" name="limit">
+	    <input id="limit" name="limit" pattern="(\d)+">
 	    <small id="limitHelp" class="form-text form-muted">Limit the object</small>
 	  </div>
-	  <button class="btn btn-primary">Submit</button>
+	  <div class="form-group">
+	    <button class="btn btn-primary" name="submit">Submit</button>
+	    <label for="submit">Get <code>.dat</code> file here.</label>
+	  </div>
 	</form>
-	<h2>Generator</h2>
-	<p>{{do.surface}}</p>
-	<h1>Download</h1>
-	<p>Get <code>.stl</code> file here.</p>
       </section>
     </main>
 
     <footer class="footer">
       <div class="col bg-light text-muted">
-	<p>Nice</p>
       </div>
     </footer>
     </div>

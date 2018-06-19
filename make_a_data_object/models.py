@@ -33,12 +33,12 @@ class Weather():
 
 class DataObject():
     """A data object thing."""
-    size = None
-    X = Y = Z = None
-    grid = (None, None)
-    surface = None
-    abstract = None
-    precipitation = None
+    # size = None
+    # X = Y = Z = None
+    # grid = (None, None)
+    # surface = None
+    # abstract = None
+    # precipitation = None
 
     def __init__(self, abstract, precipitation, size=100, limit=32):
         """The constructor.
