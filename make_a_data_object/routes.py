@@ -22,6 +22,6 @@ def submit():
     except ValueError:
         l = None
     # do = DataObject(a, p, limit=l)
-    do = DataObject(a, p, limit=35)
+    do = DataObject(a, p, limit=l)
     return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename=make.dat"})
 
