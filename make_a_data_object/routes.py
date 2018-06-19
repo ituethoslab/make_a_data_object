@@ -21,7 +21,6 @@ def submit():
         l = int(request.form.get('limit'))
     except ValueError:
         l = None
-    # do = DataObject(a, p, limit=l)
     do = DataObject(a, p, limit=l)
     return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename=make.dat"})
 
