@@ -18,9 +18,17 @@ def submit():
     a = request.form['abstract']
     p = request.form['precipitation'].split(',')
     try:
+        s = int(request.form.get('smoothing'))
+    except ValueError:
+        s = None
+
+    try:
         l = int(request.form.get('limit'))
     except ValueError:
         l = None
-    do = DataObject(a, p, limit=l)
-    return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename=make.dat"})
+
+    f = request.form.get('filename') or 'dataobject.dat'
+
+    do = DataObject(a, p, size=250, limit=l, alpha=s)
+    return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename={}".format(f)})
 

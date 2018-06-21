@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import scipy
 from scipy.interpolate import interp1d
+from scipy.ndimage.filters import gaussian_filter
 
 # This needs to be conditioned
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG)
@@ -37,7 +38,7 @@ class Weather():
 
 class DataObject():
     """A data object thing."""
-    def __init__(self, abstract, precipitation, size=100, limit=32):
+    def __init__(self, abstract, precipitation, size=100, limit=None, alpha=None):
         """The constructor.
 
         Parameters
@@ -47,10 +48,13 @@ class DataObject():
         limit : int
             Limit the resolution of the object, the rest of the points
             are interpolated
+        alpha : int
+            Amount of smoothing. Alpha parameter for gaussian blur
         """
         # X, Y, Z are size in three dimensions
         self.size = size
         self.X = self.Y = size
+        self.zscale = self.size / 100 # erm where did this 100 come from again?
 
         # grid of coordinates
         self.grid = np.mgrid[0:self.X, 0:self.Y]
@@ -73,7 +77,8 @@ class DataObject():
         # the surface
         self.surface = (size/2) + self.calculate_surface(self.grid,
                                                          self.abstract,
-                                                         self.precipitation)
+                                                         self.precipitation,
+                                                         alpha=alpha) * self.zscale
 
         logger.debug(self.surface)
 
@@ -99,8 +104,10 @@ class DataObject():
     def add_surface(self, grid, xd, yd):
         return np.add(xd, yd)
 
-    def calculate_surface(self, grid, xd, yd):
-        return xd + np.outer(xd, yd)
+    def calculate_surface(self, grid, xd, yd, alpha=0):
+        # return xd + np.outer(xd, yd)
+        alpha = alpha or 0
+        return gaussian_filter(xd + np.outer(xd, yd), alpha)
 
     def heatmap(self, **kwargs):
         return sns.heatmap(self.surface, square=True, **kwargs)
