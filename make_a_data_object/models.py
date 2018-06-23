@@ -1,6 +1,9 @@
 import logging
 import numpy as np
 import scipy
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import seaborn as sns
 from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
 
@@ -109,11 +112,20 @@ class DataObject():
         alpha = alpha or 0
         return gaussian_filter(xd + np.outer(xd, yd), alpha)
 
-    def heatmap(self, **kwargs):
+    def plot_heatmap(self, **kwargs):
         return sns.heatmap(self.surface, square=True, **kwargs)
 
-    def contourf(self, **kwargs):
+    def plot_contourf(self, **kwargs):
         return plt.contourf(self.surface, **kwargs)
+
+    def plot_surface(self, **kwargs):
+        fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, **kwargs)
+        ax.set_xlim(0, self.size)
+        ax.set_ylim(0, self.size)
+        ax.set_zlim(0, self.size)
+        ax.set_xlabel('abstract')
+        ax.set_ylabel('precipitation')
+        return fig, ax.plot_surface(*self.grid, self.surface)
 
     def write(self, filename):
         """Write to file filename."""
