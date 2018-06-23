@@ -6,6 +6,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
+import csv
 
 # This needs to be conditioned
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG)
@@ -41,26 +42,44 @@ class Weather():
 
 class DataObject():
     """A data object thing."""
-    def __init__(self, abstract, precipitation, size=100, limit=None, alpha=None):
+    def __init__(self, abstract, precipitation, size=450, base=50, border=25, limit=None, alpha=None):
         """The constructor.
 
         Parameters
         ----------
+        abstract : string
+            Abstract for the visit or presentation or something
+        precipitation : list of numbers
+            Precipitation data
         size : int
-            Size of the object, with equal in two dimensions
+            Size of the object, with equal in two dimensions (default 450)
+        base : int
+            Base height (default 50)
+        border : int
+            Border width per side (default 25)
         limit : int
             Limit the resolution of the object, the rest of the points
             are interpolated
         alpha : int
             Amount of smoothing. Alpha parameter for gaussian blur
         """
-        # X, Y, Z are size in three dimensions
+        # Sanity checks for arguments. Type checking could be fun
+        assert isinstance(abstract, str)
+        assert isinstance(precipitation, list)
+        assert all(isinstance(p, (int, float)) for p in precipitation)
+        assert isinstance(size, int) and size > 1
+        assert isinstance(border, (type(None), int)) # and border >= 0
+        assert isinstance(limit, (type(None), int)) # and limit > 0
+        assert isinstance(alpha, (type(None), int)) # and alpha > 0
+        assert size - border * 2 > 0
+
         self.size = size
-        self.X = self.Y = size
-        self.zscale = self.size / 100 # erm where did this 100 come from again?
+        self.base = base
+        self.border = border
+        self.zscale = self.size / 100 # erm where did this constant come from again?
 
         # grid of coordinates
-        self.grid = np.mgrid[0:self.X, 0:self.Y]
+        self.grid = np.mgrid[0:self.size, 0:self.size]
 
         # the actually interesting data
         ## numpy.interpolate takes list of new indices, list of old indices,
@@ -70,19 +89,27 @@ class DataObject():
         abstract_v = self.vectorize_abstract(abstract, limit=limit)
 
         # Intepolation function for vectorized abstract
-        self.ai = interp1d([size/len(abstract_v) * i for i, v in enumerate(abstract_v)], abstract_v, bounds_error=False, fill_value=0)
-        self.abstract = list(map(self.ai, range(size)))
+        self.ai = interp1d(
+            [self.border + ((size - self.border * 2)/len(abstract_v) * i) for i, v in enumerate(abstract_v)],
+            abstract_v,
+            bounds_error=False,
+            fill_value=0)
+        self.abstract = list(map(self.ai, range(self.border, self.size - self.border)))
 
         # Intepolation function for precipitation
-        self.pi = interp1d([size/len(precipitation) * i for i, v in enumerate(precipitation)], precipitation, bounds_error=False, fill_value=0)
-        self.precipitation = list(map(self.pi, range(size)))
+        self.pi = interp1d(
+            [self.border + ((size - self.border * 2)/len(precipitation) * i) for i, v in enumerate(precipitation)],
+            precipitation,
+            bounds_error=False,
+            fill_value=0)
+        self.precipitation = list(map(self.pi, range(self.border, self.size - self.border)))
 
         # the surface
-        self.surface = (size/2) + self.calculate_surface(self.grid,
-                                                         self.abstract,
-                                                         self.precipitation,
-                                                         alpha=alpha) * self.zscale
-
+        self.surface = self.base + self.calculate_surface(self.grid,
+                                                          self.border,
+                                                          self.abstract,
+                                                          self.precipitation,
+                                                          alpha=alpha) * self.zscale
         logger.debug(self.surface)
 
     def __repr__(self):
@@ -107,10 +134,17 @@ class DataObject():
     def add_surface(self, grid, xd, yd):
         return np.add(xd, yd)
 
-    def calculate_surface(self, grid, xd, yd, alpha=0):
-        # return xd + np.outer(xd, yd)
+    def calculate_surface(self, grid, border, xd, yd, alpha=0):
         alpha = alpha or 0
-        return gaussian_filter(xd + np.outer(xd, yd), alpha)
+        # return gaussian_filter(xd + np.outer(xd, yd), alpha)
+        return gaussian_filter(np.outer([0] * border + xd + [0] * border,
+                                        [0] * border + yd + [0] * border),
+                               alpha)
+        #return gaussian_filter(
+        #    np.outer(
+        #        np.concatenate((np.zeros(border), xd, np.zeros(border))),
+        #        np.concatenate((np.zeros(border), yd, np.zeros(border)))),
+        #        alpha)
 
     def plot_heatmap(self, **kwargs):
         return sns.heatmap(self.surface, square=True, **kwargs)
@@ -119,13 +153,16 @@ class DataObject():
         return plt.contourf(self.surface, **kwargs)
 
     def plot_surface(self, **kwargs):
-        fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, **kwargs)
+        if 'ax' not in kwargs:
+            fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, **kwargs)
+        else:
+            ax = kwargs['ax']
         ax.set_xlim(0, self.size)
         ax.set_ylim(0, self.size)
         ax.set_zlim(0, self.size)
         ax.set_xlabel('abstract')
         ax.set_ylabel('precipitation')
-        return fig, ax.plot_surface(*self.grid, self.surface)
+        return ax.plot_surface(*self.grid, self.surface)
 
     def write(self, filename):
         """Write to file filename."""
