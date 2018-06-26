@@ -105,8 +105,7 @@ class DataObject():
         self.precipitation = list(map(self.pi, range(self.border, self.size - self.border)))
 
         # the surface
-        self.surface = self.base + self.calculate_surface(self.grid,
-                                                          self.border,
+        self.surface = self.base + self.calculate_surface(self.border,
                                                           self.abstract,
                                                           self.precipitation,
                                                           alpha=alpha) * self.zscale
@@ -125,26 +124,31 @@ class DataObject():
         av = np.array([np.abs(lens[i - 1] - l) for (i, l) in enumerate(lens)])
         return av
 
-    def outerprod_surface(self, grid, xd, yd):
+    def outerprod_surface(self, xd, yd):
         """Yet another function. Outputs size * size shaped np.ndarray."""
         # return np.outer(yd, xd) / (np.outer(xd, yd) + 0.00001)
         # return np.outer((yd + 0.1), xd) / np.outer(xd, (yd + 0.1))
         return np.outer(xd, yd)
 
-    def add_surface(self, grid, xd, yd):
+    def add_surface(self, xd, yd):
         return np.add(xd, yd)
 
-    def calculate_surface(self, grid, border, xd, yd, alpha=0):
+    def calculate_surface(self, border, xd, yd, alpha=0):
         alpha = alpha or 0
-        # return gaussian_filter(xd + np.outer(xd, yd), alpha)
-        return gaussian_filter(np.outer([0] * border + xd + [0] * border,
-                                        [0] * border + yd + [0] * border),
-                               alpha)
-        #return gaussian_filter(
-        #    np.outer(
-        #        np.concatenate((np.zeros(border), xd, np.zeros(border))),
-        #        np.concatenate((np.zeros(border), yd, np.zeros(border)))),
-        #        alpha)
+        # Pad xd and yd with the border, and construct the matrix
+        surface = gaussian_filter(
+            np.outer(
+                np.concatenate((np.zeros(border), xd, np.zeros(border))),
+                np.concatenate((np.zeros(border), yd, np.zeros(border)))),
+            alpha)
+        # Smoothing overflows onto the border. Compensate by pulling it to zero
+        if border:
+            surface[0:border, :] = 0
+            surface[-border:, :] = 0
+            surface[:, 0:border] = 0
+            surface[:, -border:] = 0
+
+        return surface
 
     def plot_heatmap(self, **kwargs):
         return sns.heatmap(self.surface, square=True, **kwargs)
@@ -163,6 +167,13 @@ class DataObject():
         ax.set_xlabel('abstract')
         ax.set_ylabel('precipitation')
         return ax.plot_surface(*self.grid, self.surface)
+
+    def get_inverse(self):
+        # A number of issues to consider here, namely rotation, flipping
+        # and the fact that the base needs to be in the middle of the item
+        # of course, not as low as 50 units (mm) for a 500 unit (5cm) item
+        raise NotImplementedError("Design TBD")
+        # return self.size - self.surface
 
     def write(self, filename):
         """Write to file filename."""
