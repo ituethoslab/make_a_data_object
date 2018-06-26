@@ -77,6 +77,8 @@ class DataObject():
         self.base = base
         self.border = border
         self.zscale = self.size / 100 # erm where did this constant come from again?
+        self.data_size = self.size - 2 * self.border
+
 
         # grid of coordinates
         self.grid = np.mgrid[0:self.size, 0:self.size]
@@ -90,19 +92,15 @@ class DataObject():
 
         # Intepolation function for vectorized abstract
         self.ai = interp1d(
-            [self.border + ((size - self.border * 2)/len(abstract_v) * i) for i, v in enumerate(abstract_v)],
-            abstract_v,
-            bounds_error=False,
-            fill_value=0)
-        self.abstract = list(map(self.ai, range(self.border, self.size - self.border)))
+            np.linspace(0, self.data_size, len(abstract_v)),
+            abstract_v)
+        self.abstract = list(map(self.ai, range(self.data_size)))
 
         # Intepolation function for precipitation
         self.pi = interp1d(
-            [self.border + ((size - self.border * 2)/len(precipitation) * i) for i, v in enumerate(precipitation)],
-            precipitation,
-            bounds_error=False,
-            fill_value=0)
-        self.precipitation = list(map(self.pi, range(self.border, self.size - self.border)))
+            np.linspace(0, self.data_size, len(precipitation)),
+            precipitation)
+        self.precipitation = list(map(self.pi, range(self.data_size)))
 
         # the surface
         self.surface = self.base + self.calculate_surface(self.border,
@@ -134,7 +132,29 @@ class DataObject():
         return np.add(xd, yd)
 
     def calculate_surface(self, border, xd, yd, alpha=0):
+        """Calculate a surface.
+
+        Return a surface, which conceptually matches
+        the surface function in OpenSCAD
+
+        Parameters
+        ----------
+        border : int
+            Border width, which is applied to all sides
+        xd : np.array
+            Numpy array of data for first edge of the matrix
+        yd : np.array
+            Numpy array of data for the second of the matrix
+        alpha : int
+            Amount of smoothing, alpha parameter for Gaussian blurr
+
+        Returns
+        -------
+        np.array
+            2-D matrix, size len(xd) + 2*border on each side
+        """
         alpha = alpha or 0
+        assert len(xd) == len(yd), "both vectors (yd={}, xd={}) must be same size".format(len(xd), len(yd))
         # Pad xd and yd with the border, and construct the matrix
         surface = gaussian_filter(
             np.outer(
