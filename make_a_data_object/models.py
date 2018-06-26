@@ -166,7 +166,7 @@ class DataObject():
         ax.set_zlim(0, self.size)
         ax.set_xlabel('abstract')
         ax.set_ylabel('precipitation')
-        return ax.plot_surface(*self.grid, self.surface)
+        return ax.plot_surface(self.grid[0], self.grid[1], self.surface)
 
     def get_inverse(self):
         # A number of issues to consider here, namely rotation, flipping
