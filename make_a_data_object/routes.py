@@ -1,6 +1,6 @@
 from flask import Flask, Response, render_template, request
 from make_a_data_object import app
-from make_a_data_object.models import Data, DataObject
+from make_a_data_object.models import Data, DataObject, DefaultParameters
 
 @app.route('/hello')
 def hello_world():
@@ -10,25 +10,27 @@ def hello_world():
 @app.route('/')
 def index():
     """Index route."""
-    do = DataObject(Data.a, Data.p)
-    return render_template('index.html')
+    return render_template('index.html', default_smoothing=DefaultParameters.smoothing)
 
 @app.route('/make', methods=['POST'])
 def submit():
     a = request.form['abstract']
-    p = request.form['precipitation'].split(',')
+    p = [int(p) for p in request.form['precipitation'].split(',')]
     try:
         s = int(request.form.get('smoothing'))
     except ValueError:
-        s = None
+        s = DefaultParameters.smoothing
 
     try:
         l = int(request.form.get('limit'))
     except ValueError:
-        l = None
+        l = DefaultParameters.limit
 
-    f = request.form.get('filename') or 'dataobject.dat'
+    f = request.form.get('filename') or DefaultParameters.filename
 
-    do = DataObject(a, p, size=250, limit=l, alpha=s)
+    app.logger.debug("Parsed input a:{}, p:{}, s:{}, l:{}, f:{}".format(a, p, s, l, f))
+
+
+    do = DataObject(a, p, size=450, limit=l, alpha=s)
     return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename={}".format(f)})
 
