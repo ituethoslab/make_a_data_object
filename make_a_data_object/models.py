@@ -101,6 +101,8 @@ class DataObject():
             np.linspace(0, self.data_size, len(precipitation)),
             precipitation)
         self.precipitation = list(map(self.pi, range(self.data_size)))
+        # Let's add a constant 1 to the precipitation to bring it up from 0
+        self.precipitation = list(np.add(self.precipitation, 1))
 
         # the surface
         self.surface = self.base + self.calculate_surface(self.border,
