@@ -15,7 +15,7 @@ def index():
 @app.route('/make', methods=['POST'])
 def submit():
     a = request.form['abstract']
-    p = [int(p) for p in request.form['precipitation'].split(',')]
+    p = [float(p) for p in request.form['precipitation'].split(',')]
     try:
         s = int(request.form.get('smoothing'))
     except ValueError:
