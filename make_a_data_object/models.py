@@ -51,7 +51,7 @@ class Weather():
 
 class DataObject():
     """A data object thing."""
-    def __init__(self, abstract, precipitation, size=450, base=50, border=25, limit=None, alpha=None):
+    def __init__(self, abstract, precipitation, daylength, size=450, base=50, border=25, limit=None, alpha=None):
         """The constructor.
 
         Parameters
@@ -60,6 +60,8 @@ class DataObject():
             Abstract for the visit or presentation or something
         precipitation : list of numbers
             Precipitation data
+        daylength : int
+            Day length in hours
         size : int
             Size of the object, with equal in two dimensions (default 450)
         base : int
@@ -113,6 +115,18 @@ class DataObject():
         # Let's add a constant 1 to the precipitation to bring it up from 0
         self.precipitation = list(np.add(self.precipitation, 1))
 
+        # Let's add sun to the precipitation
+        # self.precipitation = list(np.add(self.precipitation, sun))
+        # way sketchy here...
+        self.daylength = daylength
+        sun_for_a_day = list(map(lambda t: self.sun(t, self.daylength), np.linspace(0, 24, num=int(len(self.precipitation) / 7))))
+        # Pad to length of the precipitation after possible rounding artefacts
+        sun_for_a_week = sun_for_a_day * 7 + [0] * (len(self.precipitation) - len(sun_for_a_day * 7))
+
+        self.precipitation = np.add(
+            self.precipitation,
+            list(map(lambda t: self.sun(t, self.daylength), sun_for_a_week)))
+
         # the surface
         self.surface = self.base + self.calculate_surface(self.border,
                                                           self.abstract,
@@ -132,6 +146,19 @@ class DataObject():
         # av = np.array([10 + (lens[i - 1] - l) for (i, l) in enumerate(lens)])
         av = np.array([np.abs(lens[i - 1] - l) for (i, l) in enumerate(lens)])
         return av
+
+    def sun(self, t, dayhours):
+        """This return -1 to 1, how high up in the sky is the sun.
+            Not really accurate as sun reaches the same peak throughout the year."""
+        # assert t >= 0
+        assert t <= 24
+        assert dayhours >= 0
+        assert dayhours <= 24
+        if t < dayhours:
+            # return np.sin(np.pi / (dayhours / t))
+            return np.sin(np.pi * t / dayhours)
+        else:
+            return -np.sin(np.pi * (24-t) / (24-dayhours))
 
     def outerprod_surface(self, xd, yd):
         """Yet another function. Outputs size * size shaped np.ndarray."""
@@ -167,6 +194,7 @@ class DataObject():
         alpha = alpha or 0
         assert len(xd) == len(yd), "both vectors (yd={}, xd={}) must be same size".format(len(xd), len(yd))
         # Pad xd and yd with the border, and construct the matrix
+        # using nympy.pad would be wise
         surface = gaussian_filter(
             np.outer(
                 np.concatenate((np.zeros(border), xd, np.zeros(border))),

@@ -16,6 +16,7 @@ def index():
 def submit():
     a = request.form['abstract']
     p = [float(p) for p in request.form['precipitation'].split(',')]
+    d = float(request.form['daylength'].replace(':', '.'))
     try:
         s = int(request.form.get('smoothing'))
     except ValueError:
@@ -28,9 +29,9 @@ def submit():
 
     f = request.form.get('filename') or DefaultParameters.filename
 
-    app.logger.debug("Parsed input a:{}, p:{}, s:{}, l:{}, f:{}".format(a, p, s, l, f))
+    app.logger.debug("Parsed input a:{}, p:{}, d: {}, s:{}, l:{}, f:{}".format(a, p, d, s, l, f))
 
 
-    do = DataObject(a, p, size=450, limit=l, alpha=s)
+    do = DataObject(a, p, d, size=450, limit=l, alpha=s)
     return Response(str(do), mimetype='text/plain', headers={"content-disposition": "attachment;filename={}".format(f)})
 
