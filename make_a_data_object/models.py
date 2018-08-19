@@ -12,13 +12,13 @@ import csv
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 logger = logging.getLogger()
 
-class Data():
+class Data:
     """Mock data object, a static class. Boo."""
     a = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus fermentum egestas mauris vel maximus. Pellentesque tortor urna, eleifend in bibendum ac, auctor sed felis. Curabitur vitae suscipit augue. Aenean eu neque at dolor condimentum vehicula. Integer a consequat nulla. Donec malesuada, elit non scelerisque iaculis, purus nibh viverra ipsum, et lacinia libero quam vitae nibh. Phasellus fringilla tempor finibus. Sed tincidunt semper turpis, vel pellentesque mauris tristique non. Pellentesque vel ligula auctor tortor vehicula placerat in vel erat. Cras tincidunt vehicula sapien, eget molestie ex bibendum sed. Morbi sed nulla sed nulla luctus ultrices ac eu neque. Suspendisse non nunc diam. In et suscipit tortor. Nulla gravida malesuada elit. Morbi convallis orci urna, non lobortis nunc mollis eget. Donec gravida felis at neque porta, nec tempus mi dignissim. Nunc porttitor massa justo, vel ultricies neque rhoncus eget. Mauris nec libero eros. Ut tristique interdum odio dapibus vulputate. Quisque sed tortor sed ipsum lacinia consectetur eu in lectus. Nulla ac aliquet metus. Nam turpis augue, interdum eu dictum quis, tincidunt non risus. In hac habitasse platea dictumst. Vestibulum feugiat mauris nec convallis fermentum. Etiam sodales tempus imperdiet."
     p = [3.2, 0, 0, 0, 4.0, 0.2, 3.1]
 
 
-class DefaultParameters():
+class DefaultParameters:
     """Default parameters.
     This should be part of the app config, perhaps? And not a silly class.
     """
@@ -27,7 +27,7 @@ class DefaultParameters():
     limit = None
 
 
-class Weather():
+class Weather:
     """Weather class.
 
     For now, to be used statistically as a weather factory. Rain is
@@ -49,7 +49,7 @@ class Weather():
         return np.floor(np.random.chisquare(1, size) * np.random.randint(0, 10))
 
 
-class DataObject():
+class DataObject:
     """A data object thing."""
     def __init__(self, abstract, precipitation, daylength, size=450, base=50, border=25, limit=None, alpha=None):
         """The constructor.
