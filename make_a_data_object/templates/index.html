@@ -61,6 +61,19 @@
 	  <button class="btn btn-primary">Download</button>
 	</form>
       </section>
+      <section id="openscan-code">
+	<p>Here's an example program to run in OpenSCAD</p>
+	<pre>
+	  <code>
+	    datafile = "<var>dataobject.dat</var>";
+	    size = 450;
+	    
+	    %cube(size);
+	    surface(file=datafile, convexity=true);
+	  </code>
+	</pre>
+	<p>Good luck!</p>
+      </section>
     </main>
 
     <footer class="footer">
