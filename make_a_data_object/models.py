@@ -87,7 +87,8 @@ class DataObject:
         self.size = size
         self.base = base
         self.border = border
-        self.zscale = self.size / 100 # erm where did this constant come from again?
+        # self.zscale = self.size / 100 # erm where did this constant come from again?
+        self.zscale = self.size / 50
         self.data_size = self.size - 2 * self.border
 
 
@@ -132,6 +133,9 @@ class DataObject:
                                                           self.abstract,
                                                           self.precipitation,
                                                           alpha=alpha) * self.zscale
+        # Clip it. Crude. Refactor this
+        self.surface = np.clip(self.surface, self.base, self.size - self.base)
+
         logger.debug(self.surface)
 
     def __repr__(self):
