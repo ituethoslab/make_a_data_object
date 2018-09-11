@@ -79,26 +79,25 @@ class DataObject:
         assert isinstance(precipitation, list)
         assert all(isinstance(p, (int, float)) for p in precipitation)
         assert isinstance(size, int) and size > 1
-        assert isinstance(border, (type(None), int)) # and border >= 0
-        assert isinstance(limit, (type(None), int)) # and limit > 0
-        assert isinstance(alpha, (type(None), int)) # and alpha > 0
+        assert isinstance(border, (type(None), int))  # and border >= 0
+        assert isinstance(limit, (type(None), int))  # and limit > 0
+        assert isinstance(alpha, (type(None), int))  # and alpha > 0
         assert size - border * 2 > 0
 
         self.size = size
         self.base = base
         self.border = border
         # self.zscale = self.size / 100 # erm where did this constant come from again?
-        self.zscale = self.size / 50
+        self.zscale = self.size / 25
         self.data_size = self.size - 2 * self.border
-
 
         # grid of coordinates
         self.grid = np.mgrid[0:self.size, 0:self.size]
 
         # the actually interesting data
-        ## numpy.interpolate takes list of new indices, list of old indices,
-        ## and list of old values, to calculate new values
-        ## Also do scaling for z. 2D inteprolation from scipy would be good
+        # numpy.interpolate takes list of new indices, list of old indices,
+        # and list of old values, to calculate new values
+        # Also do scaling for z. 2D inteprolation from scipy would be good
 
         abstract_v = self.vectorize_abstract(abstract, limit=limit)
 
@@ -246,3 +245,31 @@ class DataObject:
             for row in self.surface:
                 # print(row)
                 writer.writerow(row)
+
+
+class AdditiveDataObject(DataObject):
+    """A Data object which has an additive surface, ie. less pronounced
+    variation in z.
+    """
+    def __init__(self, abstract, precipitation, daylength, size=450, base=50, border=25, limit=None, alpha=None):
+        super().__init__(abstract, precipitation, daylength, size, base, border, limit, alpha)
+
+    def calculate_surface(self, border, xd, yd, alpha=0):
+        alpha = alpha or 0
+        assert len(xd) == len(yd), "both vectors (yd={}, xd={}) must be same size".format(len(xd), len(yd))
+        # Pad xd and yd with the border, and construct the matrix
+        # using nympy.pad would be wise
+        surface = gaussian_filter(
+            np.add(
+                np.concatenate((np.zeros(border), xd, np.zeros(border))).reshape(self.size, 1),
+                np.concatenate((np.zeros(border), yd, np.zeros(border)))),
+            alpha)
+
+        # Smoothing overflows onto the border. Compensate by pulling it to zero
+        if border:
+            surface[0:border, :] = 0
+            surface[-border:, :] = 0
+            surface[:, 0:border] = 0
+            surface[:, -border:] = 0
+
+        return surface
