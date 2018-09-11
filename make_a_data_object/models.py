@@ -1,20 +1,24 @@
+"""
+Models for MVC style Flask application.
+"""
+
 import logging
+import csv
 import numpy as np
-import scipy
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
-import csv
 
 # This needs to be conditioned. Flask provides logging via app.logger
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG)
 logger = logging.getLogger()
 
+
 class Data:
     """Mock data object, a static class. Boo."""
-    a = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus fermentum egestas mauris vel maximus. Pellentesque tortor urna, eleifend in bibendum ac, auctor sed felis. Curabitur vitae suscipit augue. Aenean eu neque at dolor condimentum vehicula. Integer a consequat nulla. Donec malesuada, elit non scelerisque iaculis, purus nibh viverra ipsum, et lacinia libero quam vitae nibh. Phasellus fringilla tempor finibus. Sed tincidunt semper turpis, vel pellentesque mauris tristique non. Pellentesque vel ligula auctor tortor vehicula placerat in vel erat. Cras tincidunt vehicula sapien, eget molestie ex bibendum sed. Morbi sed nulla sed nulla luctus ultrices ac eu neque. Suspendisse non nunc diam. In et suscipit tortor. Nulla gravida malesuada elit. Morbi convallis orci urna, non lobortis nunc mollis eget. Donec gravida felis at neque porta, nec tempus mi dignissim. Nunc porttitor massa justo, vel ultricies neque rhoncus eget. Mauris nec libero eros. Ut tristique interdum odio dapibus vulputate. Quisque sed tortor sed ipsum lacinia consectetur eu in lectus. Nulla ac aliquet metus. Nam turpis augue, interdum eu dictum quis, tincidunt non risus. In hac habitasse platea dictumst. Vestibulum feugiat mauris nec convallis fermentum. Etiam sodales tempus imperdiet."
+    a = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus fermentum egestas mauris vel maximus. Pellentesque tortor urna, eleifend in bibendum ac, auctor sed felis. Curabitur vitae suscipit augue. Aenean eu neque at dolor condimentum vehicula. Integer a consequat nulla. Donec malesuada, elit non scelerisque iaculis, purus nibh viverra ipsum, et lacinia libero quam vitae nibh. Phasellus fringilla tempor finibus. Sed tincidunt semper turpis, vel pellentesque mauris tristique non. Pellentesque vel ligula auctor tortor vehicula placerat in vel erat. Cras tincidunt vehicula sapien, eget molestie ex bibendum sed. Morbi sed nulla sed nulla luctus ultrices ac eu neque. Suspendisse non nunc diam. In et suscipit tortor. Nulla gravida malesuada elit. Morbi convallis orci urna, non lobortis nunc mollis eget. Donec gravida felis at neque porta, nec tempus mi dignissim. Nunc porttitor massa justo, vel ultricies neque rhoncus eget. Mauris nec libero eros. Ut tristique interdum odio dapibus vulputate. Quisque sed tortor sed ipsum lacinia consectetur eu in lectus. Nulla ac aliquet metus. Nam turpis augue, interdum eu dictum quis, tincidunt non risus. In hac habitasse platea dictumst. Vestibulum feugiat mauris nec convallis fermentum. Etiam sodales tempus imperdiet."""
     p = [3.2, 0, 0, 0, 4.0, 0.2, 3.1]
 
 
@@ -40,18 +44,22 @@ class Weather:
     precipitation = None
 
     def __init__(self, precipitation):
+        """Constructor."""
         if precipitation:
             self.precipitation = precipitation
         else:
             self.precipitation = self.random_weather()
 
     def random_weather(self, size=7):
-        return np.floor(np.random.chisquare(1, size) * np.random.randint(0, 10))
+        """Generate random weather."""
+        precip = np.random.chisquare(1, size) * np.random.randint(0, 10)
+        return np.floor(precip)
 
 
 class DataObject:
     """A data object thing."""
-    def __init__(self, abstract, precipitation, daylength, size=450, base=50, border=25, limit=None, alpha=None):
+    def __init__(self, abstract, precipitation, daylength,
+                 size=450, base=50, border=25, limit=None, alpha=None):
         """The constructor.
 
         Parameters
@@ -87,7 +95,8 @@ class DataObject:
         self.size = size
         self.base = base
         self.border = border
-        # self.zscale = self.size / 100 # erm where did this constant come from again?
+        # erm where did this constant come from again?
+        # self.zscale = self.size / 100
         self.zscale = self.size / 25
         self.data_size = self.size - 2 * self.border
 
@@ -138,21 +147,26 @@ class DataObject:
         logger.debug(self.surface)
 
     def __repr__(self):
+        """Printable representation."""
         return "{} with a {} surface".format(self.__class__, self.surface.shape)
 
     def __str__(self):
+        """String representation."""
         # there is also np.array2string
         return "\n".join(" ".join(str(int(y)) for y in row) for row in self.surface)
 
     def vectorize_abstract(self, abstract, limit=None):
+        """Construct a vector representation of the abstract, up to limit."""
         lens = list(map(len, abstract.split()[:limit]))
         # av = np.array([10 + (lens[i - 1] - l) for (i, l) in enumerate(lens)])
         av = np.array([np.abs(lens[i - 1] - l) for (i, l) in enumerate(lens)])
         return av
 
     def sun(self, t, dayhours):
-        """This return -1 to 1, how high up in the sky is the sun.
-            Not really accurate as sun reaches the same peak throughout the year."""
+        """This returns -1 to 1, how high up in the sky is the sun.
+        Not really accurate as sun reaches the same peak throughout
+        the year.
+        """
         # assert t >= 0
         assert t <= 24
         assert dayhours >= 0
@@ -168,9 +182,6 @@ class DataObject:
         # return np.outer(yd, xd) / (np.outer(xd, yd) + 0.00001)
         # return np.outer((yd + 0.1), xd) / np.outer(xd, (yd + 0.1))
         return np.outer(xd, yd)
-
-    def add_surface(self, xd, yd):
-        return np.add(xd, yd)
 
     def calculate_surface(self, border, xd, yd, alpha=0):
         """Calculate a surface.
@@ -213,12 +224,15 @@ class DataObject:
         return surface
 
     def plot_heatmap(self, **kwargs):
+        """Plot a heatmap of the surface for preview."""
         return sns.heatmap(self.surface, square=True, **kwargs)
 
     def plot_contourf(self, **kwargs):
+        """Plot a filled contour of the surface for preview."""
         return plt.contourf(self.surface, **kwargs)
 
     def plot_surface(self, **kwargs):
+        """Plot the surface for preview."""
         if 'ax' not in kwargs:
             fig, ax = plt.subplots(subplot_kw={'projection': '3d'}, **kwargs)
         else:
@@ -231,6 +245,7 @@ class DataObject:
         return ax.plot_surface(self.grid[0], self.grid[1], self.surface)
 
     def get_inverse(self):
+        """Calculate the inverse object to store in ETHOS Lab."""
         # A number of issues to consider here, namely rotation, flipping
         # and the fact that the base needs to be in the middle of the item
         # of course, not as low as 50 units (mm) for a 500 unit (5cm) item
@@ -251,10 +266,35 @@ class AdditiveDataObject(DataObject):
     """A Data object which has an additive surface, ie. less pronounced
     variation in z.
     """
-    def __init__(self, abstract, precipitation, daylength, size=450, base=50, border=25, limit=None, alpha=None):
-        super().__init__(abstract, precipitation, daylength, size, base, border, limit, alpha)
+    def __init__(self, abstract, precipitation, daylength,
+                 size=450, base=50, border=25, limit=None, alpha=None):
+        """The constructor."""
+        super().__init__(abstract, precipitation, daylength,
+                         size, base, border, limit, alpha)
 
     def calculate_surface(self, border, xd, yd, alpha=0):
+        """Calculate a surface.
+
+        Return a surface, which conceptually matches
+        the surface function in OpenSCAD
+
+        Parameters
+        ----------
+        border : int
+            Border width, which is applied to all sides
+        xd : np.array
+            Numpy array of data for first edge of the matrix
+        yd : np.array
+            Numpy array of data for the second of the matrix
+        alpha : int
+            Amount of smoothing, alpha parameter for Gaussian blurr
+
+        Returns
+        -------
+        np.array
+            2-D matrix, size len(xd) + 2*border on each side
+        """
+
         alpha = alpha or 0
         assert len(xd) == len(yd), "both vectors (yd={}, xd={}) must be same size".format(len(xd), len(yd))
         # Pad xd and yd with the border, and construct the matrix
