@@ -67,9 +67,11 @@
 	  <code>
 	    datafile = "<var>dataobject.dat</var>";
 	    size = 450;
-	    
-	    %cube(size);
-	    surface(file=datafile, convexity=true);
+
+	    scale(0.1) {
+	        %cube(size);
+	        surface(file=datafile, convexity=true);
+	    }
 	  </code>
 	</pre>
 	<p>Good luck!</p>
