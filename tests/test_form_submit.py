@@ -7,6 +7,7 @@ class TestFormSubmit(unittest.TestCase):
     """Confused testing: am I testing the app, the class, or controller?"""
     def setUp(self):
         make_a_data_object.app.testing = True
+        make_a_data_object.app.logger.setLevel(20)
         self.app = make_a_data_object.app.test_client()
         self.form_input = {
             'abstract': "lorem ipsum something something",
