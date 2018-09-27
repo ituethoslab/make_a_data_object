@@ -32,35 +32,42 @@
 	<p>This thing makes data objects</p>
 	<h1>Input</h1>
 	<form action="make" method="post">
-	  <div class="form-group">
-	    <label for="abstract">Abstract</label>
-	    <textarea id="abstract" class="form-control" name="abstract" rows="10" required></textarea>
-	    <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
+	  <div class="required-input">
+	    <div class="form-group">
+	      <label for="abstract">Abstract</label>
+	      <textarea id="abstract" class="form-control" name="abstract" rows="10" required></textarea>
+	      <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
+	    </div>
+	    <div class="row form-group">
+	      <label class="col-2" for="precipitation">Precipitation</label>
+	      <input class="col-3" id="precipitation" name="precipitation" required pattern="\s*(\d*[.])?\d+(,\s*(\d*[.])?\d+)*">
+	      <small class="col form-text text-muted" id="precipitationHelp">A comma separated list of values in mm. Get 7 * 4 values from <a href="https://www.yr.no/place/Denmark/Capital/Copenhagen/">Yr</a></small>
+	    </div>
+	    <div class="row form-group">
+	      <label class="col-2" for="daylength">Day length</label>
+	      <input class="col-3" id="daylength" name="daylength" required pattern="\s*\d+:\d+">
+	      <small class="col form-text text-muted" id="daylengthHelp">Day length in <var>hours:minutes</var>. See <em>dagens længde</em> on <a href="http://www.dmi.dk/vejr/til-lands/regionaludsigten/kbhnsjaelland/">DMI</a></small>
+	    </div>
 	  </div>
-	  <div class="row form-group">
-	    <label class="col-2" for="precipitation">Precipitation</label>
-	    <input class="col-3" id="precipitation" name="precipitation" required pattern="\s*(\d*[.])?\d+(,\s*(\d*[.])?\d+)*">
-	    <small class="col form-text text-muted" id="precipitationHelp">A comma separated list of values in mm. Get 7 * 4 values from <a href="https://www.yr.no/place/Denmark/Capital/Copenhagen/">Yr</a></small>
-	  </div>
-	  <div class="row form-group">
-	    <label class="col-2" for="daylength">Day length</label>
-	    <input class="col-3" id="daylength" name="daylength" required pattern="\s*\d+:\d+">
-	    <small class="col form-text text-muted" id="daylengthHelp">Day length in <var>hours:minutes</var>. See <em>dagens længde</em> on <a href="http://www.dmi.dk/vejr/til-lands/regionaludsigten/kbhnsjaelland/">DMI</a></small>
-	  </div>
-	  <div class="row form-group">
-	    <label class="col-2" for="limit">Limit</label>
-	    <input class="col-3" id="limit" name="limit" placeholder="" pattern="(\d)+">
-	    <small class="col text-muted form-text" id="limitHelp">Limit the of data that is used. Smaller values produce less <em>hedgehoggy</em> objects. Something like 10-30 seems good</small>
-	  </div>
-	  <div class="row form-group">
-	    <label class="col-2" for="smoothing">Smoothing</label>
-	    <input class="col-3" id="smoothing" name="smoothing" placeholder="{{default_smoothing}}" pattern="(\d)*">
-	    <small class="col text-muted" id="smoothingHelp">Amount of smoothing. &ge; 0</small>
-	  </div>
-	  <div class="row form-group">
-	    <label class="col-2" for="filename">File name</label>
-	    <input class="col-3" id="filename" name="filename" placeholder="dataobject.dat">
-	    <small class="col text-muted" id="filenameHelp">Optionally change filename. Consider ending in <code>.dat</code></small>
+	  
+	  <hr class="mb-4 mt-4">
+
+	  <div class="optional-input mb-5">
+	    <div class="row form-group">
+	      <label class="col-2" for="limit">Limit</label>
+	      <input class="col-3" id="limit" name="limit" placeholder="" pattern="(\d)+">
+	      <small class="col text-muted form-text" id="limitHelp">Limit the of data that is used. Smaller values produce less <em>hedgehoggy</em> objects. Something like 10-30 seems good</small>
+	    </div>
+	    <div class="row form-group">
+	      <label class="col-2" for="smoothing">Smoothing</label>
+	      <input class="col-3" id="smoothing" name="smoothing" placeholder="{{default_smoothing}}" pattern="(\d)*">
+	      <small class="col text-muted" id="smoothingHelp">Amount of smoothing. &ge; 0</small>
+	    </div>
+	    <div class="row form-group">
+	      <label class="col-2" for="filename">File name</label>
+	      <input class="col-3" id="filename" name="filename" placeholder="dataobject.dat">
+	      <small class="col text-muted" id="filenameHelp">Optionally change filename. Consider ending in <code>.dat</code></small>
+	    </div>
 	  </div>
 	  <button class="btn btn-primary">Download</button>
 	</form>
