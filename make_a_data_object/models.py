@@ -114,13 +114,13 @@ class DataObject:
         self.ai = interp1d(
             np.linspace(0, self.data_size, len(abstract_v)),
             abstract_v, kind='cubic')
-        self.abstract = list(map(self.ai, range(self.data_size)))
+        self.abstract = self.ai(range(self.data_size))
 
         # Intepolation function for precipitation
         self.pi = interp1d(
             np.linspace(0, self.data_size, len(precipitation)),
             precipitation, kind='cubic')
-        self.precipitation = list(map(self.pi, range(self.data_size)))
+        self.precipitation = self.pi(range(self.data_size))
         # Let's add a constant 1 to the precipitation to bring it up from 0
         self.precipitation = list(np.add(self.precipitation, 1))
 
