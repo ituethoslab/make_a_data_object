@@ -153,7 +153,7 @@ class DataObject:
     def __str__(self):
         """String representation."""
         # there is also np.array2string
-        return "\n".join(" ".join(str(int(y)) for y in row) for row in self.surface)
+        return "\n".join(" ".join(str(float(y)) for y in row) for row in self.surface)
 
     def vectorize_abstract(self, abstract, limit=None):
         """Construct a vector representation of the abstract, up to limit."""
