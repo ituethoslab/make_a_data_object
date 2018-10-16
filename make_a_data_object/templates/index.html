@@ -55,7 +55,7 @@
 	  <div class="optional-input mb-5">
 	    <div class="row form-group">
 	      <label class="col-2" for="limit">Limit</label>
-	      <input class="col-3" id="limit" name="limit" placeholder="" pattern="(\d)+">
+	      <input class="col-3" id="limit" name="limit" placeholder="{{default_limit}}" pattern="(\d)+">
 	      <small class="col text-muted form-text" id="limitHelp">Limit the of data that is used. Smaller values produce less <em>hedgehoggy</em> objects. Something like 10-30 seems good</small>
 	    </div>
 	    <div class="row form-group">
@@ -65,7 +65,7 @@
 	    </div>
 	    <div class="row form-group">
 	      <label class="col-2" for="filename">File name</label>
-	      <input class="col-3" id="filename" name="filename" placeholder="dataobject.dat">
+	      <input class="col-3" id="filename" name="filename" placeholder="{{default_filename}}">
 	      <small class="col text-muted" id="filenameHelp">Optionally change filename. Consider ending in <code>.dat</code></small>
 	    </div>
 	  </div>
