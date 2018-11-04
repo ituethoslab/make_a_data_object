@@ -28,7 +28,7 @@ class DefaultParameters:
     """
     smoothing = 5
     filename = 'dataobject.dat'
-    limit = None
+    limit = 20
 
 
 class Weather:
@@ -244,13 +244,15 @@ class DataObject:
         ax.set_ylabel('precipitation')
         return ax.plot_surface(self.grid[0], self.grid[1], self.surface)
 
-    def get_inverse(self):
-        """Calculate the inverse object to store in ETHOS Lab."""
-        # A number of issues to consider here, namely rotation, flipping
-        # and the fact that the base needs to be in the middle of the item
-        # of course, not as low as 50 units (mm) for a 500 unit (5cm) item
-        raise NotImplementedError("Design TBD")
-        # return self.size - self.surface
+    def get_complement(self):
+        """Calculate the complement object to store in ETHOS Lab."""
+        complement = self.size - self.surface
+        complement[0:self.border, :] = self.base
+        complement[-self.border:, :] = self.base
+        complement[:, 0:self.border] = self.base
+        complement[:, -self.border:] = self.base
+
+        return np.fliplr(complement)
 
     def write(self, filename):
         """Write to file filename."""

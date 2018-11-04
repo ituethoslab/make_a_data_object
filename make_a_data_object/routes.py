@@ -16,7 +16,9 @@ def hello_world():
 def index():
     """Index route."""
     return render_template('index.html',
-                           default_smoothing=DefaultParameters.smoothing)
+                           default_limit=DefaultParameters.limit,
+                           default_smoothing=DefaultParameters.smoothing,
+                           default_filename=DefaultParameters.filename)
 
 
 @app.route('/make', methods=['POST'])
