@@ -29,24 +29,39 @@
     <main class="container mt-5">
       <section id="generator">
 	<h1>Intro</h1>
-	<p>This thing makes data objects</p>
+	<p>This thing makes data objects for TiP / ETHOS Lab visitors.</p>
+	<h1>Protocol</h1>
+	<ol>
+	  <li>Fill the form below to collect 3 items of data: <var>abstract</var>, <var>precipitation</var> and <var>day length</var>.</li>
+	  <li>Press <button type="button" class="btn btn-primary btn-sm" disabled>Download</button> below to get a data file.</li>
+	  <li>Open OpenSCAD program.</li>
+	  <li>Build the data file to a 3D model in OpenSCAD, using the program below. Set the variable <var>datafile</var> to point to the file you just downloaded, possibly something like <code>/Users/maco/Downloads/dataobject.dat</code>.</li>
+	  <li>Export the 3D model from OpenSCAD to an STL file via <em>File</em> → <em>Export►</em> → <em>Export to STL&hellip;</em></li>
+	  <li>Walk over to <a href="https://ixdlab.itu.dk/">IxD Lab</a>.</li>
+	  <li>Make sure the UltiMaker 3D printer is available for a couple of hours. Be kind to your peers in that lab.</li>
+	  <li>Place the STL file on the memory card which is usually in the UltiMaker.</li>
+	  <li>Insert the memory card in the printer, and operate the printer frontpanel. The printer which will start working.</li>
+	  <li>Print <a href="https://owncloud.itu.dk/index.php/apps/files/?dir=/data%20object/handout&fileid=5034237">the paper handout</a> from ownCloud.</li>
+	  <li>Fetch the ready print from the 3D printer in ~4 hours.</li>
+	</ol>
+	<p>You are ready to hand over the model to the visitor.</p>
 	<h1>Input</h1>
 	<form action="make" method="post">
 	  <div class="required-input">
 	    <div class="form-group">
 	      <label for="abstract">Abstract</label>
 	      <textarea id="abstract" class="form-control" name="abstract" rows="10" required></textarea>
-	      <small id="abstractHelp" class="form-text text-muted">A couple of paragraphs of text</small>
+	      <small id="abstractHelp" class="form-text text-muted">The title of the talk the visitor is giving</small>
 	    </div>
 	    <div class="row form-group">
 	      <label class="col-2" for="precipitation">Precipitation</label>
 	      <input class="col-3" id="precipitation" name="precipitation" required pattern="\s*(\d*[.])?\d+(,\s*(\d*[.])?\d+)*">
-	      <small class="col form-text text-muted" id="precipitationHelp">A comma separated list of values in mm. Get 7 * 4 values from <a href="https://www.yr.no/place/Denmark/Capital/Copenhagen/long.html" target="_blank">Yr &#x2750;</a></small>
+	      <small class="col form-text text-muted" id="precipitationHelp">A list ot 7 * 4 = 28 comma-separated values of precipitation prediction in Copenhagen. Get them from <a href="https://www.yr.no/place/Denmark/Capital/Copenhagen/long.html" target="_blank">Yr &#x2750;</a></small>
 	    </div>
 	    <div class="row form-group">
 	      <label class="col-2" for="daylength">Day length</label>
 	      <input class="col-3" id="daylength" name="daylength" required pattern="\s*\d+:\d+">
-	      <small class="col form-text text-muted" id="daylengthHelp">Day length in <var>hours:minutes</var>. See <em>dagens længde</em> on <a href="http://www.dmi.dk/vejr/til-lands/regionaludsigten/kbhnsjaelland/" target="_blank">DMI &#x2750;</a></small>
+	      <small class="col form-text text-muted" id="daylengthHelp">Day length in <var>hours:minutes</var> in Copenhagen. Calculate <var>Sol ned</var> - <var>Sol op</var> for København on <a href="http://www.dmi.dk/vejr/til-lands/regionaludsigten/kbhnsjaelland/" target="_blank">DMI &#x2750;</a></small>
 	    </div>
 	  </div>
 	  
