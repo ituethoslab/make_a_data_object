@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 from scipy.interpolate import interp1d, InterpolatedUnivariateSpline
 from scipy.ndimage.filters import gaussian_filter
+import requests
 
 # This needs to be conditioned. Flask provides logging via app.logger
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG)
@@ -54,6 +55,20 @@ class Weather:
         """Generate random weather."""
         precip = np.random.chisquare(1, size) * np.random.randint(0, 10)
         return np.floor(precip)
+
+
+class Day:
+    """A day."""
+    def __init__(self, lat=55.67, lng=12.56):
+        endpoint = 'https://api.sunrise-sunset.org/json'
+        callurl = endpoint + '?lat={}&lng={}'.format(lat, lng)
+        logger.debug('Getting data from {}'.format(callurl))
+        self.data = requests.get(callurl).json()['results']
+
+    def length(self):
+        """Length as a string."""
+        length = ":".join(self.data['day_length'].split(':')[:2])
+        return length
 
 
 class DataObject:

@@ -3,7 +3,7 @@ Routes for MVC style traffic control in Flask.
 """
 from flask import Response, render_template, request
 from make_a_data_object import app
-from make_a_data_object.models import AdditiveDataObject, DefaultParameters
+from make_a_data_object.models import AdditiveDataObject, DefaultParameters, Day
 
 
 @app.route('/hello')
@@ -16,6 +16,7 @@ def hello_world():
 def index():
     """Index route."""
     return render_template('index.html',
+                           daylength_today=Day().length(),
                            default_limit=DefaultParameters.limit,
                            default_smoothing=DefaultParameters.smoothing,
                            default_filename=DefaultParameters.filename)
